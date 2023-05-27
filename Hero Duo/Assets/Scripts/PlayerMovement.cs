@@ -72,6 +72,9 @@ public class PlayerMovement : MonoBehaviour
     public void OnAttack()
     {
         // spawn "sword" prefab
+
+        // according to vincent there should be a thing in controller to do on keyup or key release,
+        // that way it will only hit it once
         Instantiate(swordPrefab, this.transform);
     }
 }
