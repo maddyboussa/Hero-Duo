@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // this script will handle both collisions between blockades if we want any
@@ -12,8 +13,11 @@ public class CollisionManager : MonoBehaviour
 
     [SerializeField]
     GameObject boss;
+
+    GameObject sword;
     
     float invincibilityTime = 0;
+    float bossInvincibilityTime = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -25,9 +29,10 @@ public class CollisionManager : MonoBehaviour
     void Update()
     {
         invincibilityTime += Time.deltaTime;
+        bossInvincibilityTime += Time.deltaTime;
 
-        // check for collision
-        if (RectCollision(player, boss))
+        // check for collision between player and boss
+        if (HealthManager.instance.BossHealth >= 0 && HealthManager.instance.PlayerHealth >= 0 && RectCollision(player, boss))
         {
             // if the player is no longer invincible
             if (invincibilityTime > 1f)
@@ -40,6 +45,26 @@ public class CollisionManager : MonoBehaviour
             }
             
         }
+
+        // get reference to first sword object in list if list is not empty
+        if (player.GetComponent<PlayerMovement>().swords.Count > 0)
+        {
+            sword = player.GetComponent<PlayerMovement>().swords[0];
+
+            // check for collision between sword and boss
+            if (HealthManager.instance.BossHealth >= 0 && RectCollision(sword, boss))
+            {
+                if (bossInvincibilityTime > .7f)
+                {
+                    HealthManager.instance.BossHealth -= 10;
+
+                    // restart timer
+                    bossInvincibilityTime = 0;
+                }
+
+            }
+        }
+
     }
 
     public bool RectCollision(GameObject player, GameObject collidable)

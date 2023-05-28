@@ -12,6 +12,15 @@ public class HealthManager : MonoBehaviour
     [SerializeField]
     int bossHealth;
 
+    [SerializeField]
+    GameObject player;
+
+    [SerializeField]
+    GameObject boss;
+
+    [SerializeField]
+    GameObject deathScene;
+
     // properties
     public int PlayerHealth { get { return playerHealth; } set { playerHealth = value; } }
 
@@ -35,6 +44,17 @@ public class HealthManager : MonoBehaviour
         if (playerHealth <= 0)
         {
             // Die
+            player.SetActive(false);
+            deathScene.SetActive(true);
+            //Destroy(player);
+        }
+
+        if (bossHealth <= 0)
+        {
+            // Die
+            boss.SetActive(false);
+            deathScene.SetActive(true);
+            //Destroy(boss);
         }
         
     }

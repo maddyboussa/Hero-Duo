@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
+    public static PlayerManager instance;
+
     // enum to handle which state player is in
     public enum GameState
     {
@@ -13,8 +15,37 @@ public class PlayerManager : MonoBehaviour
         Japanese
     }
 
+    // load audio
+    [SerializeField]
+    public AudioSource swap;
+
+    [SerializeField]
+    GameObject taroTitle;
+
+    [SerializeField]
+    GameObject eagleTitle;
+
+    [SerializeField]
+    GameObject taroSprite;
+
+    [SerializeField]
+    GameObject eagleSprite;
+
+    [SerializeField]
+    Sprite katana;
+
+    [SerializeField]
+    Sprite shotgun;
+
+
     // stores current state of the player
-    GameState currentState;
+    public GameState currentState;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,14 +62,46 @@ public class PlayerManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.American:
-                GetComponent<SpriteRenderer>().color = Color.cyan;
+                //GetComponent<SpriteRenderer>().color = Color.cyan;
                 // specific attacks
 
-                break;
+                // change UI based on active player
+                eagleTitle.SetActive(true);
+                taroTitle.SetActive(false);
+
+                // set sprite based on active player
+                GetComponent<SpriteRenderer>().sprite = eagleSprite.GetComponent<SpriteRenderer>().sprite;
+
+                // set weapon sprite
+                if (GetComponent<PlayerMovement>().swords.Count > 0)
+                {
+                    foreach (GameObject sword in GetComponent<PlayerMovement>().swords)
+                    {
+                        sword.GetComponent<SpriteRenderer>().sprite = shotgun;
+                    }
+                }
+
+                    break;
 
             case GameState.Japanese:
-                GetComponent<SpriteRenderer>().color = Color.red;
+                //GetComponent<SpriteRenderer>().color = Color.red;
                 // other unique moveset
+
+                // change UI based on active player
+                eagleTitle.SetActive(false);
+                taroTitle.SetActive(true);
+
+                // set sprite based on active player
+                GetComponent<SpriteRenderer>().sprite = taroSprite.GetComponent<SpriteRenderer>().sprite;
+
+                // set weapon sprite
+                if (GetComponent<PlayerMovement>().swords.Count > 0)
+                {
+                    foreach (GameObject sword in GetComponent<PlayerMovement>().swords)
+                    {
+                        sword.GetComponent<SpriteRenderer>().sprite = katana;
+                    }
+                }
 
                 break;
         }
@@ -55,6 +118,10 @@ public class PlayerManager : MonoBehaviour
         else if (currentState == GameState.Japanese)
         {
             currentState = GameState.American;
+
         }
+
+        // play sound
+        swap.Play();
     }
 }

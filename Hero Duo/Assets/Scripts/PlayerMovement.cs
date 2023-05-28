@@ -1,11 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField]
+    public AudioSource taroAttack;
+
+    [SerializeField]
+    public AudioSource eagleAttack;
+
     [SerializeField]
     float speed = 10f;
 
@@ -18,6 +25,12 @@ public class PlayerMovement : MonoBehaviour
 
     float totalCamHeight;
     float totalCamWidth;
+
+    public List<GameObject> swords;
+
+    bool canAttack = true;
+
+    float cooldownDuration = 0.5f;
 
     // Start is called before the first frame update
     void Start()
@@ -71,10 +84,44 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnAttack()
     {
+        if (!canAttack)
+        {
+            return;
+        }
+
         // spawn "sword" prefab
 
         // according to vincent there should be a thing in controller to do on keyup or key release,
         // that way it will only hit it once
-        Instantiate(swordPrefab, this.transform);
+        //if (swordPrefab.activeInHierarchy)
+        //{
+        //    return;
+        //}
+        swords.Add(Instantiate(swordPrefab, this.transform));
+        
+        if (PlayerManager.instance.currentState == PlayerManager.GameState.Japanese)
+        {
+            taroAttack.Play();
+        }
+        else
+        {
+            eagleAttack.Play();
+        }
+
+        StartCoroutine(StartCooldown());
+    }
+
+    public IEnumerator StartCooldown()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(cooldownDuration);
+        canAttack = true;
+
+        // remove current swords to reset cooldown
+        foreach (GameObject sword in swords)
+        {
+            Destroy(sword);
+        }
+        swords.Clear();
     }
 }
