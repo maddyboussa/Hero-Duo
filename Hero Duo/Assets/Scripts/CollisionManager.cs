@@ -9,6 +9,9 @@ using UnityEngine;
 public class CollisionManager : MonoBehaviour
 {
     [SerializeField]
+    public GameObject fireball;
+
+    [SerializeField]
     GameObject player;
 
     [SerializeField]
@@ -64,6 +67,24 @@ public class CollisionManager : MonoBehaviour
 
             }
         }
+
+        foreach (GameObject fireball in SpawnFireball.instance.fireballs)
+        {
+            if (HealthManager.instance.PlayerHealth >= 0 && RectCollision(fireball, player))
+            {
+                if (invincibilityTime > 1f)
+                {
+                    // if collision, damage player
+                    HealthManager.instance.PlayerHealth -= 5;
+
+                    // then start timer over
+                    invincibilityTime = 0;
+                }
+
+            }
+        }
+
+        
 
     }
 
